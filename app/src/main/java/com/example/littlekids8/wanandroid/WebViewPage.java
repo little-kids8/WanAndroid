@@ -191,7 +191,7 @@ webView.setVerticalScrollBarEnabled(true);
                     Log.d("remenber","**"+Boolean.toString(ifSave)+"收藏成功1+已经入4-----------------");
                 }
 
-                Toast.makeText(this,"收藏成功1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"收藏成功",Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.ic_star_red_500_24dp);
             }else if(isfavor&&isOriginUrl){
                 if(isBanner){
@@ -202,7 +202,7 @@ webView.setVerticalScrollBarEnabled(true);
                     LitePal.deleteAll(Article.class,"itemId=?",Integer.toString(article.getItemId()));
                 }
 
-                Toast.makeText(this,"已取消收藏1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"已取消收藏",Toast.LENGTH_SHORT).show();
                 isfavor=false;
                 item.setIcon(R.drawable.ic_star_border_red_500_24dp);
                 List<Article> articles = LitePal.findAll(Article.class);
@@ -223,7 +223,7 @@ webView.setVerticalScrollBarEnabled(true);
                     /*urlArticle.setNiceDate(getCurrentTime());
                     urlArticle.save();*/
                     item.setIcon(R.drawable.ic_star_red_500_24dp);
-                    Toast.makeText(this,"收藏成功2",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"收藏成功",Toast.LENGTH_SHORT).show();
                 }
                 else
                     Toast.makeText(WebViewPage.this,"urlArticle is null",Toast.LENGTH_SHORT).show();
@@ -231,7 +231,7 @@ webView.setVerticalScrollBarEnabled(true);
             }else if(isArticleItemIdContain(urlArticle)&&!isOriginUrl){
                 LitePal.deleteAll(Article.class,"itemId=?",Integer.toString(urlArticle.getItemId()));
                 item.setIcon(R.drawable.ic_star_border_red_500_24dp);
-                Toast.makeText(this,"已取消收藏2",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"已取消收藏",Toast.LENGTH_SHORT).show();
             }else
                 Toast.makeText(WebViewPage.this,"unkonwn Error",Toast.LENGTH_SHORT).show();
 
