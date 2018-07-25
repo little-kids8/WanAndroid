@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<litepal>
+    <dbname value="ArticleList" ></dbname>
+
+    <version value="1"></version>
+
+    <list>
+        <mapping class="com.example.littlekids8.wanandroid.gson.Article"></mapping>
+        <mapping class="com.example.littlekids8.wanandroid.gson.Banner"></mapping>
+    </list>
+</litepal>
