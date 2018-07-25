@@ -7,13 +7,15 @@ LitePal对数据类对象的操作中，如果对某一对象使用过save()方�
 
 2018.07.25.0：43
 1.修改了线程的执行方式，onpause状态时杀死viewpager的自动轮播的线程，onresume（）时重新开启线程执行自动轮播，这样应用处于后台时不会一直开启线程更新
+2018.07.25.19：48
+2.修复了每次上滑后，banner图片会回到第一页的情况，将viewpager的setAdapter()方法从onBindViewHolder()方法里移动到onCreadViewHolder()里。
 
 
 */
 /**
 *
 已知Bug：
-1.每次上滑后，viewPager都会回到第一个页。
+1.每次上滑后，viewPager都会回到第一个页。(2018.7.25已修复)
 
 
 */

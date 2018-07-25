@@ -72,6 +72,9 @@ public class ArticlesAdapter extends RecyclerView.Adapter{
         if(viewType == BANNER_ITEM){
             View view = LayoutInflater.from(context).inflate(R.layout.banner,parent,false);
             bannerViewHolder = new BannerViewHolder(view);
+            bannerViewHolder.viewPager.setAdapter(bannerAdapter);
+            bannerViewHolder.viewPager.setPageMargin((int) TypedValue.
+                    applyDimension(TypedValue.COMPLEX_UNIT_DIP,10, Resources.getSystem().getDisplayMetrics()));
             /*viewPagerThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -135,11 +138,10 @@ public class ArticlesAdapter extends RecyclerView.Adapter{
         }
         else if(holder instanceof BannerViewHolder){
             bannerViewHolder =(BannerViewHolder)holder;
-            bannerViewHolder.viewPager.setAdapter(bannerAdapter);
+            /*bannerViewHolder.viewPager.setAdapter(bannerAdapter);
             bannerViewHolder.viewPager.setPageMargin((int) TypedValue.
-                    applyDimension(TypedValue.COMPLEX_UNIT_DIP,10, Resources.getSystem().getDisplayMetrics()));
-        }
-
+                    applyDimension(TypedValue.COMPLEX_UNIT_DIP,10, Resources.getSystem().getDisplayMetrics()));*/
+    }
     }
 
     @Override
