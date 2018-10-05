@@ -2,6 +2,7 @@ package com.example.littlekids8.wanandroid;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,31 +23,61 @@ import com.example.littlekids8.wanandroid.gson.Banner;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.LitePalSupport;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+
 import javax.sql.DataSource;
 
 public class WebViewPage extends AppCompatActivity {
 
     private WebView webView;
-    private ActionBar actionBar;
+     private ActionBar actionBar;
     private boolean isfavor;
     private boolean isBanner;
-    private Banner banner;
-    private Article article;
-    String pageOriginUrl;
-    private String newUrl;
+     private Banner banner;
+     private Article article;
+     String pageOriginUrl;
+     private String requestUrl;
+     private String currentUrl;
     private MenuItem item;
-    private Article urlArticle;
-    private boolean isOriginUrl;
+     private Article urlArticle;
+
+    static String[] arr = {"a"};
+    private ArrayList<String> favorUrl =new ArrayList<String>();
+
 
     @Override
     public void onBackPressed() {
 
-        if(webView.canGoBack())
+        if(webView.canGoBack()){
             webView.goBack();
-        else
+
+            /*newUrl = webView.getUrl();
+            urlArticle = new Article();
+            urlArticle.setLink(newUrl);
+            urlArticle.setAuthor("网页");
+            urlArticle.setTitle(newUrl);
+            urlArticle.setItemId((int)(System.currentTimeMillis()/1000));*/
+           /* Log.d("Favor",newUrl=webView.getUrl());
+            Log.d("Favor",favorUrl.get(favorUrl.size()-1));
+            if(((!webView.canGoBack())&&isfavor)||favorUrl.contains(newUrl))
+                item.setIcon(R.drawable.ic_star_red_500_24dp);
+            else
+                item.setIcon(R.drawable.ic_star_border_red_500_24dp);*/
+
+        }
+
+        else{
             super.onBackPressed();
+        }
+
     }
 
     @Override
@@ -60,10 +91,11 @@ public class WebViewPage extends AppCompatActivity {
 
         actionBar = getSupportActionBar();
 
+
         webView = (WebView)findViewById(R.id.web_view);
-webView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-webView.setHorizontalScrollBarEnabled(true);
-webView.setVerticalScrollBarEnabled(true);
+        webView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+        webView.setHorizontalScrollBarEnabled(true);
+        webView.setVerticalScrollBarEnabled(true);
         Intent intent = getIntent();
 
         pageOriginUrl = "http://www.baidu.com";
@@ -85,8 +117,10 @@ webView.setVerticalScrollBarEnabled(true);
             finish();
         }
         isfavor = isIdContain();
+        if(isfavor){
+            favorUrl.add(pageOriginUrl);
+        }
 
-        isOriginUrl = true;
         final String title = "Loading..";
         actionBar.setTitle(title);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -108,25 +142,35 @@ webView.setVerticalScrollBarEnabled(true);
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 actionBar.setTitle( view.getTitle());
-                if(urlArticle!=null)
-                    urlArticle.setTitle(view.getTitle());
+                /*if(urlArticle!=null)
+                    urlArticle.setTitle(view.getTitle());*/
+
+                currentUrl = webView.getUrl();
+                Log.d("Favor",currentUrl);
+                if (!favorUrl.isEmpty())
+                Log.d("Favor",favorUrl.get(favorUrl.size()-1));
+                if(((!webView.canGoBack())&&isfavor)||favorUrl.contains(currentUrl))
+                    item.setIcon(R.drawable.ic_star_red_500_24dp);
+                else
+                    item.setIcon(R.drawable.ic_star_border_red_500_24dp);
+                /*Toast.makeText(WebViewPage.this,"完成",Toast.LENGTH_SHORT).show();*/
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             //加载新的url时会调用
                 super.shouldOverrideUrlLoading(view, request);
+                requestUrl = request.getUrl().toString();
                 actionBar.setTitle(" Loading...");
-                newUrl = request.getUrl().toString();
-                isOriginUrl = false;
+
                 urlArticle = new Article();
-                urlArticle.setLink(newUrl);
+
                 urlArticle.setAuthor("网页");
-                urlArticle.setTitle(newUrl);
+                urlArticle.setTitle(currentUrl);
                 urlArticle.setItemId((int)(System.currentTimeMillis()/1000));
                 item.setIcon(R.drawable.ic_star_border_red_500_24dp);
 
-                Toast.makeText(WebViewPage.this,newUrl,Toast.LENGTH_SHORT).show();
+                Toast.makeText(WebViewPage.this,currentUrl,Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -145,6 +189,7 @@ webView.setVerticalScrollBarEnabled(true);
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar,menu);
         item=menu.findItem(R.id.favor);
+        Log.d("favorite","onCreateOptionsMenu");
         if(isfavor)
             item.setIcon(R.drawable.ic_star_red_500_24dp);
         return true;
@@ -158,7 +203,7 @@ webView.setVerticalScrollBarEnabled(true);
                 break;
 
         case R.id.favor:
-            if(!isfavor&&isOriginUrl){
+            if(!isfavor&&(!webView.canGoBack())){//未收藏且为原始链接
                 isfavor=true;
                 if(isBanner){
                    banner.save();
@@ -179,7 +224,14 @@ webView.setVerticalScrollBarEnabled(true);
                     nnArticle.setTitle(article.getTitle());
                     nnArticle.setAuthor(article.getAuthor());
                     nnArticle.setLink(article.getLink());
+
+                    Log.d("Favor","收藏"+article.getLink());
+                    Log.d("Favor",Integer.toString(favorUrl.size()));
+                    favorUrl.add(article.getLink());
+                    Log.d("Favor",Integer.toString(favorUrl.size()));
                     nnArticle.save();
+
+
 
                     /*article.setNiceDate(getCurrentTime());
                      article.save();*/
@@ -193,13 +245,14 @@ webView.setVerticalScrollBarEnabled(true);
 
                 Toast.makeText(this,"收藏成功",Toast.LENGTH_SHORT).show();
                 item.setIcon(R.drawable.ic_star_red_500_24dp);
-            }else if(isfavor&&isOriginUrl){
+            }else if(isfavor&&!webView.canGoBack()){
                 if(isBanner){
                     LitePal.deleteAll(Banner.class,"itemId=?",Integer.toString(banner.getItemId()));
                     LitePal.deleteAll(Article.class,"itemId=?",Integer.toString(banner.getItemId()));
                 }
                 else{
                     LitePal.deleteAll(Article.class,"itemId=?",Integer.toString(article.getItemId()));
+                    if (favorUrl!=null)favorUrl.remove(article.getLink());
                 }
 
                 Toast.makeText(this,"已取消收藏",Toast.LENGTH_SHORT).show();
@@ -210,26 +263,28 @@ webView.setVerticalScrollBarEnabled(true);
                     Log.d("remenber","***"+Integer.toString(mArticle.getItemId()));}
                 Log.d("remenber","已经入5+取消收藏");
 
-            }else if(!isArticleItemIdContain(urlArticle)&&!isOriginUrl ){
-                if(urlArticle!=null){
+            }else if(!isArticleItemIdContain(urlArticle)&&webView.canGoBack() ){
+
                     Article newUrlArticle = new Article();
-                    newUrlArticle.setAuthor(urlArticle.getAuthor());
-                    newUrlArticle.setLink(urlArticle.getLink());
-                    newUrlArticle.setTitle(urlArticle.getTitle());
-                    newUrlArticle.setNiceDate(getCurrentTime());
-                    newUrlArticle.setItemId(urlArticle.getItemId());
+                    newUrlArticle.setAuthor("网页");
+                    newUrlArticle.setLink(webView.getUrl());
+                    newUrlArticle.setTitle(webView.getTitle());
+                    newUrlArticle.setNiceDate("收藏于"+getCurrentTime());
+                    newUrlArticle.setItemId((int)(System.currentTimeMillis()/1000));
                     newUrlArticle.save();
 
-                    /*urlArticle.setNiceDate(getCurrentTime());
-                    urlArticle.save();*/
+                    Log.d("Favor","收藏"+newUrlArticle.getLink());
+                    Log.d("Favor",Integer.toString(favorUrl.size()));
+                    favorUrl.add(newUrlArticle.getLink());
+                    Log.d("Favor",Integer.toString(favorUrl.size()));
+
                     item.setIcon(R.drawable.ic_star_red_500_24dp);
                     Toast.makeText(this,"收藏成功",Toast.LENGTH_SHORT).show();
-                }
-                else
-                    Toast.makeText(WebViewPage.this,"urlArticle is null",Toast.LENGTH_SHORT).show();
 
-            }else if(isArticleItemIdContain(urlArticle)&&!isOriginUrl){
+
+            }else if(isArticleItemIdContain(urlArticle)&&webView.canGoBack()){
                 LitePal.deleteAll(Article.class,"itemId=?",Integer.toString(urlArticle.getItemId()));
+                if (favorUrl!=null)favorUrl.remove(urlArticle.getLink());
                 item.setIcon(R.drawable.ic_star_border_red_500_24dp);
                 Toast.makeText(this,"已取消收藏",Toast.LENGTH_SHORT).show();
             }else
@@ -285,20 +340,9 @@ webView.setVerticalScrollBarEnabled(true);
     }
 
     public String getCurrentTime(){
-        Calendar calendar = Calendar.getInstance();
 
-        int year = calendar.get(Calendar.YEAR);
-
-        int month = calendar.get(Calendar.MONTH)+1;
-
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-
-        int minute = calendar.get(Calendar.MINUTE);
-
-        int second = calendar.get(Calendar.SECOND);
-
-        return year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        String currentTime = df.format(new Date());// new Date()为获取当前系统时间
+       return currentTime;
     }
 }

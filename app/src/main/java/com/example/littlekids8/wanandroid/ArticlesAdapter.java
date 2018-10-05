@@ -162,6 +162,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter{
     }
 
     public Thread getViewPagerThread() {
+        //新建一个线程
         viewPagerThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
